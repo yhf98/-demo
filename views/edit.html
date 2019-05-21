@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="">
+  <meta name="author" content="">
+  <title>传智播客 - 黑马程序员</title>
+  <link href="/public/vendor/bootstrap/css/bootstrap.css" rel="stylesheet">
+  <link href="/public/css/main.css" rel="stylesheet">
+</head>
+
+<body>
+  <nav class="navbar navbar-inverse navbar-fixed-top">
+    <div class="container-fluid">
+      <div class="navbar-header">
+        <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar"
+          aria-expanded="false" aria-controls="navbar">
+          <span class="sr-only">Toggle navigation</span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+        </button>
+        <a class="navbar-brand" href="/">传智播客 - 黑马程序员</a>
+      </div>
+    </div>
+  </nav>
+  <div class="container-fluid">
+    <div class="row">
+      <div class="col-sm-9 col-sm-offset-1 col-md-10 col-md-offset-1 main">
+        <h2 class="sub-header">修改员工</h2>
+        <form id="form">
+          
+        </form>
+      </div>
+    </div>
+  </div>
+  <script src="/public/vendor/jquery/jquery.js"></script>
+  <script src="/public/vendor/art-template/template-web.js"></script>
+  <script id='formTmp' type="text/html">
+    <div class="form-group">
+            <label for="name">姓名</label>
+            <input type="text" class="form-control" id="name" name="name"  value ={{name}} required>
+          </div>
+          <div class="form-group">
+            <label for="gender">性别</label>
+            <div class="radio">
+              <label class="radio-inline">
+                <input type="radio" name="gender" id="inlineRadio1" value="m" required {{if gender== 'm'}}checked{{/if}}> 男
+              </label>
+              <label class="radio-inline">
+                <input type="radio" name="gender" id="inlineRadio2" value="f" required {{if gender== 'f'}}checked{{/if}}> 女
+              </label>
+            </div>
+          </div>
+          <div class="form-group">
+            <label for="birthday">出生日期</label>
+            <input type="date" class="form-control" id="birthday" name="birthday"  value="{{birthday}}" required>
+          </div>
+          <div class="form-group">
+            <label for="employmentDate">入职日期</label>
+            <input type="date" class="form-control" id="employmentDate" name="employmentDate" value="{{employmentDate}}" required>
+          </div>
+          <div class="form-group">
+            <label for="mobilePhone">手机号码</label>
+            <input type="text" class="form-control" id="mobilePhone" name="mobilePhone" value="{{mobilePhone}}" required>
+          </div>
+          <div class="form-group">
+            <label for="email">邮箱</label>
+            <input type="email" class="form-control" id="email" name="email" value="{{email}}" required>
+          </div>
+          <a class="btn btn-danger" href="/">取消</a>
+          <button type="submit" class="btn btn-primary" id="editbtn">修改</button>
+</script>
+  <script>
+    // 业务实现代码写到这里
+    // 获取url中的 id
+    var url = document.URL
+    var id = url.split('?')[1]
+    // 发送异步请求
+    $.ajax({
+        url: '/employees',
+        type: 'GET',
+        data: id,
+        success: (result) => {
+            if (result.success) {
+                let html = template('formTmp', result.data)
+                $('#form').html(html)
+                // console.log(result.data)
+            }
+        }
+    })
+
+    // 给修改按钮绑定点击事件
+    $('#form').on('click','#editbtn', function(event) {
+        // 阻止默认行为
+        event.preventDefault()
+        // 获取所有参数
+        let params = $('#form').serialize()
+        console.log(params)
+        // 发送异步请求
+        $.ajax({
+            url: '/employees/update?'+id,
+            type: 'POST',
+            data: params,
+            success: function (result) {
+                  if (result.success) {
+                    alert('修改成功')
+                    window.location='/'
+                  }
+            }
+        })
+    })
+
+  </script>
+</body>
+
+</html>

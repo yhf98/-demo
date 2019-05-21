@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="">
+  <meta name="author" content="">
+  <title>传智播客 - 黑马程序员</title>
+  <link href="/public/vendor/bootstrap/css/bootstrap.css" rel="stylesheet">
+  <link href="/public/css/main.css" rel="stylesheet">
+</head>
+
+<body>
+  <nav class="navbar navbar-inverse navbar-fixed-top">
+    <div class="container-fluid">
+      <div class="navbar-header">
+        <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar"
+          aria-expanded="false" aria-controls="navbar">
+          <span class="sr-only">Toggle navigation</span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+        </button>
+        <a class="navbar-brand" href="/">传智播客 - 黑马程序员</a>
+      </div>
+    </div>
+  </nav>
+  <div class="container-fluid">
+    <div class="row">
+      <div class="col-sm-9 col-sm-offset-1 col-md-10 col-md-offset-1 main">
+        <h2 class="sub-header">员工管理</h2>
+        <a class="btn btn-success" href="/new.html">添加员工</a>
+        <div class="table-responsive">
+          <table class="table table-striped">
+            <thead>
+              <tr>
+                <th>序号</th>
+                <th>姓名</th>
+                <th>性别</th>
+                <th>出生日期</th>
+                <th>入职日期</th>
+                <th>手机号码</th>
+                <th>邮箱</th>
+                <th>操作</th>
+              </tr>
+            </thead>
+            <tbody id="list_container">
+
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+  <script src="/public/vendor/jquery/jquery.js"></script>
+  <script src="/public/vendor/art-template/template-web.js"></script>
+  <!-- 模板代码 -->
+  <script id="tmp" type="text/html">
+    {{each data}}
+    <tr>
+      <td>{{ count++ }}</td>
+      <td>{{ $value.name }}</td>
+      <td>{{if $value.gender =='m'}}男{{else}}女{{/if}}</td>
+      <td>{{ $value.birthday}}</td>
+      <td>{{ $value.employmentDate}}</td>
+      <td>{{ $value.mobilePhone }}</td>
+      <td>{{ $value.email }}</td>
+      <td>
+        <a href="/edit.html?id={{  $value.id }}">编辑</a>
+        <a href="javascript:void(0);" class="delBtn" id="{{  $value.id }}">删除</a>
+      </td>
+    </tr>
+    {{ /each }}
+  </script>
+  <script>
+    // 封装一个更新数据的函数
+    function getNewData() {
+      // 发送异步请求
+      $.ajax({
+        url: '/employees/list',
+        type: 'GET',
+        success: res => {
+          // count 用于显示序列号
+          res.count = 1
+          let html = template('tmp', res)
+          $('#list_container').html(html)
+        }
+      })
+
+    }
+    getNewData()
+    // 给删除按钮绑定点击事件 : 事件委托
+    $('#list_container').on('click', '.delBtn', function () {
+      // alert($(this).attr('id'))
+      // 获取 id
+      var id = $(this).attr('id')
+      // 发送异步请求
+      if (confirm('确认删除吗？')) {
+        $.ajax({
+          url: 'employees/delete?id=' + id,
+          type: 'GET',
+          success: res => {
+            if (res.success) {
+              alert('删除成功')
+              getNewData()
+            }
+          }
+        })
+      }
+    })
+  </script>
+</body>
+
+</html>
